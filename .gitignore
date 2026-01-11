@@ -1,0 +1,9 @@
+# Data
+data/*.csv
+
+# Outputs
+outputs/*.parquet
+
+# Python
+__pycache__/
+*.pyc
