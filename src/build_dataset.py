@@ -35,14 +35,28 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(me
 
 
 def parse_to_et(series: pd.Series) -> pd.Series:
-    """Parse timestamps and ensure tz-aware America/New_York.
-    If naive -> assume ET. If tz-aware -> convert to ET."""
-    dt = pd.to_datetime(series, errors="coerce")
-    if dt.dt.tz is None:
-        dt = dt.dt.tz_localize(TZ_ET)
+    """
+    Robust timestamp parsing (DST/mixed offsets safe).
+
+    - If strings include timezone offsets (e.g., -05:00 and -04:00) or Z:
+        parse with utc=True so pandas produces a single tz-aware dtype,
+        then convert to America/New_York.
+
+    - If strings are naive (no tz info):
+        parse as naive then localize to America/New_York.
+    """
+    s = series.astype(str)
+
+    # detect timezone info in strings
+    has_tz_info = s.str.contains(r"(Z|[+-]\d{2}:\d{2})", regex=True, na=False).any()
+
+    if has_tz_info:
+        dt = pd.to_datetime(s, errors="coerce", utc=True)
+        return dt.dt.tz_convert(TZ_ET)
     else:
-        dt = dt.dt.tz_convert(TZ_ET)
-    return dt
+        dt = pd.to_datetime(s, errors="coerce")
+        return dt.dt.tz_localize(TZ_ET)
+
 
 
 def filter_rth(df: pd.DataFrame, ts_col: str) -> pd.DataFrame:
