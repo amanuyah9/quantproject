@@ -1,9 +1,9 @@
-# Data
+# Raw data (never commit)
 data/*.csv
 
-# Outputs
-outputs/*.parquet
+# Generated outputs (never commit)
+outputs/
 
-# Python
+# Python junk
 __pycache__/
 *.pyc
