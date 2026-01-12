@@ -1,5 +1,6 @@
 # Raw data (never commit)
 data/*.csv
+!data/events_template.csv
 
 # Generated outputs (never commit)
 outputs/
