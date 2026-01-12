@@ -48,7 +48,7 @@ def parse_to_et(series: pd.Series) -> pd.Series:
     s = series.astype(str)
 
     # detect timezone info in strings
-    has_tz_info = s.str.contains(r"(Z|[+-]\d{2}:\d{2})", regex=True, na=False).any()
+    has_tz_info = s.str.contains(r"(?:Z|[+-]\d{2}:\d{2})", regex=True, na=False).any()
 
     if has_tz_info:
         dt = pd.to_datetime(s, errors="coerce", utc=True)
